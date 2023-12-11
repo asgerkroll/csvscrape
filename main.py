@@ -7,9 +7,9 @@ def main():
     process_epd_data()
 
     # Read the CSV files with correct delimiter and decimal
-    df1 = pd.read_csv('output_files/Concrete.csv', delimiter=';', decimal=',')
-    df2 = pd.read_csv('output_files/Steel.csv', delimiter=';', decimal=',')
-    df3 = pd.read_csv('output_files/Wood.csv', delimiter=';', decimal=',')
+    df_concrete = pd.read_csv('output_files/Concrete.csv', delimiter=';', decimal=',')
+    df_steel = pd.read_csv('output_files/Steel.csv', delimiter=';', decimal=',')
+    df_wood = pd.read_csv('output_files/Wood.csv', delimiter=';', decimal=',')
 
     # Revit data file
     revit_data = pd.read_csv('revit_processed.csv', delimiter=';', decimal=',')
@@ -43,11 +43,11 @@ def main():
 
         # Determine the correct DataFrame based on material
         if material == 'Concrete':
-            df = df1
+            df = df_concrete
         elif material == 'Wood':
-            df = df3
+            df = df_wood
         elif material == 'Steel':
-            df = df2
+            df = df_steel
         else:
             continue
 
@@ -60,7 +60,8 @@ def main():
         # Calculations for each phase
         for phase in phase_mapping:
             value = df.at[0, phase]
-            row_result[phase] = float(value) * volume
+            # print(phase)
+            row_result[phase] = value * float(volume)
 
         individual_results.append(row_result)
 
@@ -69,7 +70,7 @@ def main():
 
     # Calculate total results
     total_results = individual_results_df.sum(numeric_only=True)
-    total_results['Source'] = [df1.at[0, 'Source'], df2.at[0, 'Source'], df3.at[0, 'Source']]
+    total_results['Source'] = [df_concrete.at[0, 'Source'], df_steel.at[0, 'Source'], df_wood.at[0, 'Source']]
 
     # DataFrame for total results
     total_results_df = pd.DataFrame([total_results])
